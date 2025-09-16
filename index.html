@@ -1,0 +1,474 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voyage à Chicago - Itinéraire Interactif</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .content {
+            display: flex;
+            min-height: 600px;
+        }
+
+        .sidebar {
+            width: 300px;
+            padding: 30px;
+            background: #f8f9fa;
+            border-right: 1px solid #e9ecef;
+        }
+
+        .day-selector {
+            margin-bottom: 30px;
+        }
+
+        .day-selector h3 {
+            color: #2a5298;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+        }
+
+        .day-button {
+            display: block;
+            width: 100%;
+            padding: 15px 20px;
+            margin-bottom: 10px;
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+            font-size: 1.1em;
+            font-weight: 500;
+            color: #495057;
+        }
+
+        .day-button:hover {
+            border-color: #2a5298;
+            background: #f8f9ff;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(42, 82, 152, 0.2);
+        }
+
+        .day-button.active {
+            background: #2a5298;
+            color: white;
+            border-color: #2a5298;
+            box-shadow: 0 5px 15px rgba(42, 82, 152, 0.3);
+        }
+
+        .day-info {
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            margin-top: 20px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .day-info h4 {
+            color: #2a5298;
+            margin-bottom: 15px;
+        }
+
+        .activity-list {
+            list-style: none;
+        }
+
+        .activity-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid #f1f3f4;
+            color: #6c757d;
+        }
+
+        .activity-list li:last-child {
+            border-bottom: none;
+        }
+
+        .map-container {
+            flex: 1;
+            position: relative;
+            background: #e9ecef;
+            overflow: hidden;
+        }
+
+        .map-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: brightness(1.1) contrast(1.1);
+        }
+
+        .marker {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background: #dc3545;
+            border-radius: 50% 50% 50% 0;
+            transform: rotate(-45deg);
+            cursor: pointer;
+            display: none;
+            animation: bounce 2s infinite;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .marker::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            transform: translate(-50%, -50%) rotate(45deg);
+        }
+
+        .marker.day1 { background: #ff6b6b; }
+        .marker.day2 { background: #4ecdc4; }
+        .marker.day3 { background: #45b7d1; }
+        .marker.day4 { background: #f9ca24; }
+        .marker.day5 { background: #6c5ce7; }
+        .marker.day6 { background: #fd79a8; }
+
+        .marker.visible {
+            display: block;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0) rotate(-45deg);
+            }
+            40% {
+                transform: translateY(-10px) rotate(-45deg);
+            }
+            60% {
+                transform: translateY(-5px) rotate(-45deg);
+            }
+        }
+
+        .marker-tooltip {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.9em;
+            white-space: nowrap;
+            transform: translate(-50%, -100%);
+            margin-top: -10px;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+
+        .marker:hover .marker-tooltip {
+            opacity: 1;
+        }
+
+        .legend {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            min-width: 200px;
+        }
+
+        .legend h4 {
+            margin-bottom: 15px;
+            color: #2a5298;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin-right: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                padding: 20px;
+            }
+            
+            .map-container {
+                min-height: 400px;
+            }
+            
+            .legend {
+                position: relative;
+                top: auto;
+                right: auto;
+                margin: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏙️ Voyage à Chicago</h1>
+            <p>Itinéraire jour par jour</p>
+        </div>
+        
+        <div class="content">
+            <div class="sidebar">
+                <div class="day-selector">
+                    <h3>Sélectionnez un jour</h3>
+                    <button class="day-button active" data-day="day1">
+                        Jour 1
+                    </button>
+                    <button class="day-button" data-day="day2">
+                        Jour 2
+                    </button>
+                    <button class="day-button" data-day="day3">
+                        Jour 3
+                    </button>
+                    <button class="day-button" data-day="day4">
+                        Jour 4
+                    </button>
+                    <button class="day-button" data-day="day5">
+                        Jour 5
+                    </button>
+                    <button class="day-button" data-day="day6">
+                        Jour 6
+                    </button>
+                </div>
+                
+                <div class="day-info" id="dayInfo">
+                    <h4>Jour 1</h4>
+                    <ul class="activity-list">
+                        <li>🏨 Check-in à l'hôtel</li>
+                        <li>🌆 Chicago Water Tower (monument historique survivant au Grand Incendie)</li>
+                        <li>🚶 Tribune Tower (architecture néo-gothique remarquable)</li>
+                        <li>🍽️ Hancock Tower (875 North Michigan Avenue)</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="map-container">
+                <img src="chicagomap1.jpg" alt="Chicago Downtown" class="map-image" id="dayMap">
+                
+                <!-- Marqueurs Jour 1 -->
+                
+                
+                <!-- Marqueurs Jour 2 -->
+                
+                
+                <!-- Marqueurs Jour 3 -->
+                
+                
+                <!-- Marqueurs Jour 4 -->
+                
+                
+                <!-- Marqueurs Jour 5 -->
+                
+                
+                <!-- Marqueurs Jour 6 -->
+                
+                
+                
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Données des activités par jour
+        const dayActivities = {
+            day1: {
+                title: "Jour 1",
+                activities: [
+                    "🏨 A - Check-in à l'hôtel",
+					"🌆 B - Hancock Tower",
+                    "🌆 C - Chicago Water Tower (monument historique survivant au Grand Incendie)",
+                    "🌆 D - Tribune Tower (architecture néo-gothique remarquable)",
+					"🌆 E - Wrigley Building",
+					"🌆 F - Marina City (2 tours en forme d’épis de maïs)",
+					"🚶 G - Riverwalk"
+                ],
+                mapImage: "chicagomap1.jpg", 
+                mapAlt: "Carte Chicago"
+            },
+            day2: {
+                title: "Jour 2",
+                activities: [
+                    "🎨 Art Institute of Chicago",
+                    "🦕 Field Museum",
+                    "🐟 Shedd Aquarium",
+                    "🌃 Grant Park"
+                ],
+                mapImage: "chicago2.jpg", 
+                mapAlt: "Carte Musées Chicago"
+            },
+            day3: {
+                title: "Jour 3",
+                activities: [
+                    "🎡 Navy Pier",
+                    "🌳 Lincoln Park Zoo",
+                    "🏖️ Oak Street Beach",
+                    "🚲 Lakefront Trail"
+                ],
+                mapImage: "chicago3.jpg", 
+                mapAlt: "Carte Musées Chicago"
+            },
+            day4: {
+                title: "Jour 4",
+                activities: [
+                    "🍕 Deep Dish Pizza chez Lou Malnati's",
+                    "🥩 Italian Beef Sandwich",
+                    "🍿 Garrett Popcorn Shops",
+                    "🍺 Brewery Tour"
+                ],
+                mapImage: "chicago4.jpg", 
+                mapAlt: "Carte Musées Chicago"
+            },
+            day5: {
+                title: "Jour 5",
+                activities: [
+                    "🏗️ Chicago Architecture Foundation Tour",
+                    "🏛️ Frank Lloyd Wright Home & Studio",
+                    "🎭 Chicago Theatre District",
+                    "🌉 River Walk"
+                ],
+                mapImage: "chicago5.jpg", 
+                mapAlt: "Carte Musées Chicago"
+            },
+            day6: {
+                title: "Jour 6",
+                activities: [
+                    "🛍️ Magnificent Mile",
+                    "🏪 State Street Shopping",
+                    "☕ Last Chicago Coffee",
+                    "✈️ Départ vers O'Hare"
+                ],
+                mapImage: "chicago6.jpg", 
+                mapAlt: "Carte Musées Chicago"
+            }
+        };
+
+        // Sélection des éléments
+        const dayButtons = document.querySelectorAll('.day-button');
+        const dayInfo = document.getElementById('dayInfo');
+        const markers = document.querySelectorAll('.marker');
+        const mapImage = document.getElementById('dayMap');
+
+        // Fonction pour changer la map du jour
+        function changeDayMap(day) {
+            const data = dayActivities[day];
+            mapImage.src = data.mapImage;
+            mapImage.alt = data.mapAlt;
+        }
+
+        // Fonction pour afficher les activités d'un jour
+        function showDayActivities(day) {
+            const data = dayActivities[day];
+            dayInfo.innerHTML = `
+                <h4>${data.title}</h4>
+                <ul class="activity-list">
+                    ${data.activities.map(activity => `<li>${activity}</li>`).join('')}
+                </ul>
+            `;
+        }
+
+        // Fonction pour afficher les marqueurs d'un jour
+        function showDayMarkers(selectedDay) {
+            markers.forEach(marker => {
+                marker.classList.remove('visible');
+                if (marker.classList.contains(selectedDay)) {
+                    marker.classList.add('visible');
+                }
+            });
+        }
+
+        // Gestionnaire d'événements pour les boutons de jour
+        dayButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                // Retirer la classe active de tous les boutons
+                dayButtons.forEach(btn => btn.classList.remove('active'));
+                
+                // Ajouter la classe active au bouton cliqué
+                button.classList.add('active');
+                
+                // Obtenir le jour sélectionné
+                const selectedDay = button.getAttribute('data-day');
+                
+                // Afficher les activités et marqueurs correspondants
+                showDayActivities(selectedDay);
+                showDayMarkers(selectedDay);
+                changeDayMap(selectedDay);
+            });
+        });
+
+        // Animation d'entrée pour les marqueurs
+        function animateMarkers() {
+            const visibleMarkers = document.querySelectorAll('.marker.visible');
+            visibleMarkers.forEach((marker, index) => {
+                marker.style.animationDelay = `${index * 0.2}s`;
+            });
+        }
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', () => {
+            animateMarkers();
+        });
+
+        // Réanimer les marqueurs lors du changement de jour
+        dayButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                setTimeout(animateMarkers, 100);
+            });
+        });
+    </script>
+</body>
+</html>
