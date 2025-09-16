@@ -267,32 +267,38 @@
                 <div class="day-selector">
                     <h3>Sélectionnez un jour</h3>
                     <button class="day-button active" data-day="day1">
-                        Jour 1
+                        Mardi 21
                     </button>
                     <button class="day-button" data-day="day2">
-                        Jour 2
+                        Mercredi 22
                     </button>
                     <button class="day-button" data-day="day3">
-                        Jour 3
+                        Jeudi 23
                     </button>
                     <button class="day-button" data-day="day4">
-                        Jour 4
+                        Vendredi 24
                     </button>
                     <button class="day-button" data-day="day5">
-                        Jour 5
+                        Samedi 25
                     </button>
                     <button class="day-button" data-day="day6">
-                        Jour 6
+                        Dimanche 26
+                    </button>
+					<button class="day-button" data-day="day7">
+                        Metro
                     </button>
                 </div>
                 
                 <div class="day-info" id="dayInfo">
-                    <h4>Jour 1</h4>
+                    <h4>Mardi 21</h4>
                     <ul class="activity-list">
-                        <li>🏨 Check-in à l'hôtel</li>
-                        <li>🌆 Chicago Water Tower (monument historique survivant au Grand Incendie)</li>
-                        <li>🚶 Tribune Tower (architecture néo-gothique remarquable)</li>
-                        <li>🍽️ Hancock Tower (875 North Michigan Avenue)</li>
+                        <li>🏨 A - Check-in à l'hôtel</li>
+                        <li>🌆 B - Hancock Tower</li>
+                        <li>🌆 C - Chicago Water Tower (monument historique survivant au Grand Incendie)</li>
+                        <li>🌆 D - Tribune Tower (architecture néo-gothique remarquable)</li>
+						<li>🌆 E - Wrigley Building</li>
+						<li>🌆 F - Marina City (2 tours en forme d’épis de maïs)</li>
+						<li>🚶 G - Riverwalk</li>
                     </ul>
                 </div>
             </div>
@@ -327,7 +333,7 @@
         // Données des activités par jour
         const dayActivities = {
             day1: {
-                title: "Jour 1",
+                title: "Mardi 21",
                 activities: [
                     "🏨 A - Check-in à l'hôtel",
 					"🌆 B - Hancock Tower",
@@ -341,15 +347,17 @@
                 mapAlt: "Carte Chicago"
             },
             day2: {
-                title: "Jour 2",
+                title: "Mercredi 22",
                 activities: [
-                    "🎨 Art Institute of Chicago",
-                    "🦕 Field Museum",
-                    "🐟 Shedd Aquarium",
-                    "🌃 Grant Park"
+                    "🎡 A - Navy Pier (grand roue)",
+                    "🌆 B - Gold Coast - Astor street (rue historique avec demeures victoriennes)",
+                    "🚶 C - North Avenue Beach (promenade le long du lac)",
+                    "🦕 D - Lincoln Park Zoo (gratuit)",
+					"🌳 E - Lincoln Park Conservatory (gratuit)",
+					"🍿 F - United Center (NBA)",
                 ],
-                mapImage: "chicago2.jpg", 
-                mapAlt: "Carte Musées Chicago"
+                mapImage: "chicagomap2.jpg", 
+                mapAlt: "Carte Chicago"
             },
             day3: {
                 title: "Jour 3",
@@ -394,6 +402,14 @@
                 ],
                 mapImage: "chicago6.jpg", 
                 mapAlt: "Carte Musées Chicago"
+            },
+			day7: {
+                title: "Carte Métro",
+                activities: [
+                    "🚶 Métro"
+                ],
+                mapImage: "metrochicago.png", 
+                mapAlt: "Carte Metro Chicago"
             }
         };
 
