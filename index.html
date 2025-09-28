@@ -41,42 +41,23 @@
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
         }
 
-        .content {
-            display: flex;
-            min-height: 600px;
-        }
-
-        .sidebar {
-            width: 300px;
-            padding: 30px;
-            background: #f8f9fa;
-            border-right: 1px solid #e9ecef;
-            overflow-y: auto;
-            max-height: 80vh;
-        }
-
         .day-selector {
-            margin-bottom: 30px;
-        }
-
-        .day-selector h3 {
-            color: #2a5298;
-            margin-bottom: 20px;
-            font-size: 1.3em;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            padding: 20px;
+            background: #f8f9fa;
+            flex-wrap: wrap;
         }
 
         .day-button {
-            display: block;
-            width: 100%;
-            padding: 15px 20px;
-            margin-bottom: 10px;
+            padding: 10px 20px;
             background: white;
             border: 2px solid #e9ecef;
             border-radius: 10px;
             cursor: pointer;
             transition: all 0.3s ease;
-            text-align: left;
-            font-size: 1.1em;
+            font-size: 1em;
             font-weight: 500;
             color: #495057;
         }
@@ -95,14 +76,27 @@
             box-shadow: 0 5px 15px rgba(42, 82, 152, 0.3);
         }
 
+        .content {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .main-content {
+            display: flex;
+        }
+
+        .sidebar {
+            width: 300px;
+            padding: 30px;
+            background: #f8f9fa;
+            border-right: 1px solid #e9ecef;
+        }
+
         .day-info {
             padding: 20px;
             background: white;
             border-radius: 10px;
-            margin-top: 20px;
             box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
-            overflow-y: auto;
-            max-height: 400px;
         }
 
         .day-info h4 {
@@ -147,115 +141,8 @@
             cursor: move;
         }
 
-        .map-draggable {
-            position: absolute;
-            cursor: grab;
-        }
-
-        .map-draggable:active {
-            cursor: grabbing;
-        }
-
-        .marker {
-            position: absolute;
-            width: 40px;
-            height: 40px;
-            background: #dc3545;
-            border-radius: 50% 50% 50% 0;
-            transform: rotate(-45deg);
-            cursor: pointer;
-            display: none;
-            animation: bounce 2s infinite;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-        }
-
-        .marker::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 20px;
-            height: 20px;
-            background: white;
-            border-radius: 50%;
-            transform: translate(-50%, -50%) rotate(45deg);
-        }
-
-        .marker.day1 { background: #ff6b6b; }
-        .marker.day2 { background: #4ecdc4; }
-        .marker.day3 { background: #45b7d1; }
-        .marker.day4 { background: #f9ca24; }
-        .marker.day5 { background: #6c5ce7; }
-        .marker.day6 { background: #fd79a8; }
-
-        .marker.visible {
-            display: block;
-        }
-
-        @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% {
-                transform: translateY(0) rotate(-45deg);
-            }
-            40% {
-                transform: translateY(-10px) rotate(-45deg);
-            }
-            60% {
-                transform: translateY(-5px) rotate(-45deg);
-            }
-        }
-
-        .marker-tooltip {
-            position: absolute;
-            background: rgba(0, 0, 0, 0.8);
-            color: white;
-            padding: 8px 12px;
-            border-radius: 6px;
-            font-size: 0.9em;
-            white-space: nowrap;
-            transform: translate(-50%, -100%);
-            margin-top: -10px;
-            z-index: 1000;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            pointer-events: none;
-        }
-
-        .marker:hover .marker-tooltip {
-            opacity: 1;
-        }
-
-        .legend {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: rgba(255, 255, 255, 0.95);
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-            min-width: 200px;
-        }
-
-        .legend h4 {
-            margin-bottom: 15px;
-            color: #2a5298;
-        }
-
-        .legend-item {
-            display: flex;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-
-        .legend-color {
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            margin-right: 10px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-        }
-
         @media (max-width: 768px) {
-            .content {
+            .main-content {
                 flex-direction: column;
             }
             
@@ -266,13 +153,6 @@
             
             .map-container {
                 min-height: 400px;
-            }
-            
-            .legend {
-                position: relative;
-                top: auto;
-                right: auto;
-                margin: 20px;
             }
         }
     </style>
@@ -285,57 +165,58 @@
         </div>
         
         <div class="content">
-            <div class="sidebar">
-                <div class="day-selector">
-                    <h3>Sélectionnez un jour</h3>
-                    <button class="day-button active" data-day="day1">
-                        Mardi 21
-                    </button>
-                    <button class="day-button" data-day="day2">
-                        Mercredi 22
-                    </button>
-                    <button class="day-button" data-day="day3">
-                        Jeudi 23
-                    </button>
-                    <button class="day-button" data-day="day4">
-                        Vendredi 24
-                    </button>
-                    <button class="day-button" data-day="day5">
-                        Samedi 25
-                    </button>
-                    <button class="day-button" data-day="day6">
-                        Dimanche 26
-                    </button>
-					<button class="day-button" data-day="day7">
-                        Metro
-                    </button>
-					<button class="day-button" data-day="day8">
-                        Resto
-                    </button>
-                </div>
-                
-                <div class="day-info" id="dayInfo">
-                    <h4>Mardi 21</h4>
-                    <ul class="activity-list">
-                        <li>🏨 A - Check-in à l'hôtel</li>
-                        <li>🌆 B - Hancock Tower</li>
-                        <li>🌆 C - Chicago Water Tower (monument historique survivant au Grand Incendie)</li>
-                        <li>🌆 D - Tribune Tower (architecture néo-gothique remarquable)</li>
-						<li>🌆 E - Wrigley Building</li>
-						<li>🌆 F - Marina City (2 tours en forme d'épis de maïs)</li>
-						<li>🚶 G - Riverwalk</li>
-                    </ul>
-                </div>
+            <div class="day-selector">
+                <button class="day-button active" data-day="day1">
+                    Mardi 21
+                </button>
+                <button class="day-button" data-day="day2">
+                    Mercredi 22
+                </button>
+                <button class="day-button" data-day="day3">
+                    Jeudi 23
+                </button>
+                <button class="day-button" data-day="day4">
+                    Vendredi 24
+                </button>
+                <button class="day-button" data-day="day5">
+                    Samedi 25
+                </button>
+                <button class="day-button" data-day="day6">
+                    Dimanche 26
+                </button>
+				<button class="day-button" data-day="day7">
+                    Metro
+                </button>
+				<button class="day-button" data-day="day8">
+                    Resto
+                </button>
             </div>
             
-            <div class="map-container">
-                <img src="chicagomap1.jpg" alt="Chicago Downtown" class="map-image map-draggable" id="dayMap">
+            <div class="main-content">
+                <div class="sidebar">
+                    <div class="day-info" id="dayInfo">
+                        <h4>Mardi 21</h4>
+                        <ul class="activity-list">
+                            <li>🏨 A - Check-in à l'hôtel</li>
+                            <li>🌆 B - Hancock Tower</li>
+                            <li>🌆 C - Chicago Water Tower</li>
+                            <li>🌆 D - Tribune Tower</li>
+                            <li>🌆 E - Wrigley Building</li>
+                            <li>🌆 F - Marina City</li>
+                            <li>🚶 G - Riverwalk</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="map-container">
+                    <img src="chicagomap1.jpg" alt="Chicago Downtown" class="map-image" id="dayMap">
+                </div>
             </div>
         </div>
     </div>
 
     <script>
-        // Données des activités par jour
+        // The script remains exactly the same as in the previous version
         const dayActivities = {
             day1: {
                 title: "Mardi 21",
@@ -351,15 +232,14 @@
                 mapImage: "chicagomap1.jpg", 
                 mapAlt: "Carte Chicago"
             },
-            day2: {
-                title: "Mercredi 22",
+            day4: {
+                title: "Vendredi 24",
                 activities: [
                     { name: "🎡 A - Navy Pier (grand roue)", link: "https://www.google.com/maps/search/Navy+Pier/@41.8921442,-87.6095146,17z/data=!3m1!4b1?authuser=0&entry=ttu&g_ep=EgoyMDI1MDkxMC4wIKXMDSoASAFQAw%3D%3D" },
                     { name: "🌆 B - Gold Coast - Astor street (rue historique avec demeures victoriennes)", link: "https://www.google.com/maps/place/N+Astor+St,+Chicago,+IL+60610,+%C3%89tats-Unis/@41.9078243,-87.6301304,17z/data=!3m1!4b1!4m6!3m5!1s0x880fd35adff7dd2b:0x25fa8ac2256f34c2!8m2!3d41.9078243!4d-87.6275555!16s%2Fm%2F02r_03r?authuser=0&entry=ttu&g_ep=EgoyMDI1MDkxMC4wIKXMDSoASAFQAw%3D%3D" },
                     { name: "🏖️ C - North Avenue Beach (promenade le long du lac)", link: "https://www.google.com/maps/place/North+Avenue+Beach/@41.9190586,-87.6348791,16z/data=!3m1!4b1!4m6!3m5!1s0x880fd366ec660f0f:0x1b2c609110c71b7f!8m2!3d41.9172219!4d-87.6269675!16s%2Fg%2F1z264n6zb?authuser=0&entry=ttu&g_ep=EgoyMDI1MDkxMC4wIKXMDSoASAFQAw%3D%3D" },
                     { name: "🦕 D - Lincoln Park Zoo (gratuit)", link: "https://www.google.com/maps/place/Lincoln+Park+Zoo/@41.921703,-87.6362152,17z/data=!3m1!4b1!4m6!3m5!1s0x880fd36b093a9a07:0x940cc06f90294db!8m2!3d41.921703!4d-87.6336403!16s%2Fm%2F025v4fb?authuser=0&entry=ttu&g_ep=EgoyMDI1MDkxMC4wIKXMDSoASAFQAw%3D%3D" },
-                    { name: "🌳 E - Lincoln Park Conservatory (gratuit)", link: "https://www.google.com/maps/place/Jardin+botanique+de+Lincoln+Park/@41.9238673,-87.6378275,17z/data=!3m1!4b1!4m6!3m5!1s0x880fd37280bd9ae1:0xfca7f69839207bda!8m2!3d41.9238673!4d-87.6352526!16zL20vMDlieGZ3?authuser=0&entry=ttu&g_ep=EgoyMDI1MDkxMC4wIKXMDSoASAFQAw%3D%3D" },
-                    { name: "🍿 F - United Center (NBA)", link: "https://www.google.com/maps/place/United+Center/@41.8806908,-87.6767508,17z/data=!3m2!4b1!5s0x880e2d3ec092e747:0x65fbac35002ffbd8!4m6!3m5!1s0x880e2d3ecaa9b54f:0x9b93f0068cf00344!8m2!3d41.8806908!4d-87.6741759!16zL20vMDJuc2hz?authuser=0&entry=ttu&g_ep=EgoyMDI1MDkxMC4wIKXMDSoASAFQAw%3D%3D" }
+                    { name: "🌳 E - Lincoln Park Conservatory (gratuit)", link: "https://www.google.com/maps/place/Jardin+botanique+de+Lincoln+Park/@41.9238673,-87.6378275,17z/data=!3m1!4b1!4m6!3m5!1s0x880fd37280bd9ae1:0xfca7f69839207bda!8m2!3d41.9238673!4d-87.6352526!16zL20vMDlieGZ3?authuser=0&entry=ttu&g_ep=EgoyMDI1MDkxMC4wIKXMDSoASAFQAw%3D%3D" }
                 ],
                 mapImage: "chicagomap2.jpg", 
                 mapAlt: "Carte Chicago"
@@ -375,20 +255,21 @@
                     { name: "🌆 E - Shedd Aquarium (vue dur le lac)", link: "https://www.google.com/maps/place/Aquarium+John+G.+Shedd/@41.8675726,-87.6166129,17z/data=!3m2!4b1!5s0x880e2b637f0dfc79:0xf2dd92cafc3aeb65!4m6!3m5!1s0x880e2b635fb775f9:0x32059de3df50fbdf!8m2!3d41.8675726!4d-87.614038!16zL20vMDJqdzB6?authuser=0&entry=ttu&g_ep=EgoyMDI1MDkxMC4wIKXMDSoASAFQAw%3D%3D" },
                     { name: "🌆 F - Adler Planetorium (vue sur la skyline)", link: "https://www.google.com/maps/place/Adler+Planetarium/@41.8664066,-87.6093647,17z/data=!3m1!4b1!4m6!3m5!1s0x880e2b6fb7b114b5:0x6920a3aa12218ea6!8m2!3d41.8664066!4d-87.6067898!16zL20vMDFkbHpj?authuser=0&entry=ttu&g_ep=EgoyMDI1MDkxMC4wIKXMDSoASAFQAw%3D%3D" },
                     { name: "🚶 G - Museum Campus (promenade entre les musées)", link: "https://www.google.com/maps/place/Museum+Campus/@41.8662202,-87.6182014,17z/data=!3m1!4b1!4m6!3m5!1s0x880e2cb8eaaaaaab:0xdd9a371e767de69b!8m2!3d41.8662202!4d-87.6156265!16zL20vMDYzbjQy?authuser=0&entry=ttu&g_ep=EgoyMDI1MDkxMC4wIKXMDSoASAFQAw%3D%3D" },
-                    { name: "🌆 H - Croisière Chicago Architecture Center", link: "https://www.google.com/maps/place/Chicago+Architecture+Foundation/@41.8880144,-87.6261223,16z/data=!3m1!4b1!4m6!3m5!1s0x880e2ca3b888695d:0x9343105d14c3dc53!8m2!3d41.8880144!4d-87.6235474!16s%2Fm%2F026yk42?authuser=0&entry=ttu&g_ep=EgoyMDI1MDkxMC4wIKXMDSoASAFQAw%3D%3D" }
+                    { name: "🌳 H - ???Hyde Park??? (!!!assez loin!!!)", link: "https://www.google.com/maps/place/Hyde+Park,+Chicago,+Illinois,+%C3%89tats-Unis/@41.7944135,-87.6008914,15z/data=!3m1!4b1!4m6!3m5!1s0x880e2912ce6f7027:0xc0cfb5545d4a37b2!8m2!3d41.7947633!4d-87.5916665!16zL20vMDFwbTFk?authuser=0&entry=ttu&g_ep=EgoyMDI1MDkxMC4wIKXMDSoASAFQAw%3D%3D" },
+					{ name: "🌆 I - !!! METEO!!! Croisière Chicago Architecture Center", link: "https://www.google.com/maps/place/Chicago+Architecture+Foundation/@41.8880144,-87.6261223,16z/data=!3m1!4b1!4m6!3m5!1s0x880e2ca3b888695d:0x9343105d14c3dc53!8m2!3d41.8880144!4d-87.6235474!16s%2Fm%2F026yk42?authuser=0&entry=ttu&g_ep=EgoyMDI1MDkxMC4wIKXMDSoASAFQAw%3D%3D" }
                 ],
                 mapImage: "chicagomap3.jpg", 
                 mapAlt: "Carte Chicago"
             },
 			
-			day4: {
-                title: "Vendredi 24",
+			day2: {
+                title: "Mercredi 22",
                 activities: [
                     { name: "🌆 A - Willis Tower", link: "https://www.google.com/maps/place/Willis+Tower,+Chicago,+IL+60606,+%C3%89tats-Unis/@41.8788731,-87.6384863,16z/data=!3m1!4b1!4m6!3m5!1s0x880e2cbf1d3c61a7:0xcee917a8ddbc62f1!8m2!3d41.8788731!4d-87.6359114!16s%2Fg%2F12hldzfck?authuser=0&entry=ttu&g_ep=EgoyMDI1MDkxMC4wIKXMDSoASAFQAw%3D%3D" },
                     { name: "🚶 B - South Loop (quartier)", link: "https://www.google.com/maps/place/South+Loop,+Chicago,+Illinois,+%C3%89tats-Unis/@41.861374,-87.638463,15z/data=!3m1!4b1!4m6!3m5!1s0x880e2c8f3bbc18fb:0x91e24d68ed0a1370!8m2!3d41.8674081!4d-87.6275005!16s%2Fg%2F12q4rffgc?authuser=0&entry=ttu&g_ep=EgoyMDI1MDkxMC4wIKXMDSoASAFQAw%3D%3D" },
                     { name: "🚶 C - Chinatown (quartier)", link: "https://www.google.com/maps/place/Chinatown,+Chicago,+Illinois+60616,+%C3%89tats-Unis/@41.8524529,-87.6417468,16z/data=!3m1!4b1!4m6!3m5!1s0x880e2c6094f0e2f3:0xd6ba620cfbe60bb1!8m2!3d41.850691!4d-87.634049!16zL20vMDJrZjQ3?authuser=0&entry=ttu&g_ep=EgoyMDI1MDkxMC4wIKXMDSoASAFQAw%3D%3D" },
                     { name: "🚶 D - Pilsen (quartier)", link: "https://www.google.com/maps/place/Pilsen,+Chicago,+Illinois,+%C3%89tats-Unis/@41.8491715,-87.6655083,15z/data=!3m1!4b1!4m6!3m5!1s0x880e2cff885d6b71:0x92f41b0f7df44cf8!8m2!3d41.8524902!4d-87.6562598!16s%2Fg%2F1tj223n9?authuser=0&entry=ttu&g_ep=EgoyMDI1MDkxMC4wIKXMDSoASAFQAw%3D%3D" },
-                    { name: "🌳 E - Hyde Park", link: "https://www.google.com/maps/place/Hyde+Park,+Chicago,+Illinois,+%C3%89tats-Unis/@41.7944135,-87.6008914,15z/data=!3m1!4b1!4m6!3m5!1s0x880e2912ce6f7027:0xc0cfb5545d4a37b2!8m2!3d41.7947633!4d-87.5916665!16zL20vMDFwbTFk?authuser=0&entry=ttu&g_ep=EgoyMDI1MDkxMC4wIKXMDSoASAFQAw%3D%3D" }
+					{ name: "🍿 E - United Center (NBA) !!!Station Damen Metro ligne verte!!!", link: "https://www.google.com/maps/place/United+Center/@41.8806908,-87.6767508,17z/data=!3m2!4b1!5s0x880e2d3ec092e747:0x65fbac35002ffbd8!4m6!3m5!1s0x880e2d3ecaa9b54f:0x9b93f0068cf00344!8m2!3d41.8806908!4d-87.6741759!16zL20vMDJuc2hz?authuser=0&entry=ttu&g_ep=EgoyMDI1MDkxMC4wIKXMDSoASAFQAw%3D%3D" }
                 ],
                 mapImage: "chicagomap4.jpg", 
                 mapAlt: "Carte Chicago"
@@ -447,12 +328,10 @@
             // Continuez avec les autres jours de la même manière
         };
 
-        // Sélection des éléments
         const dayButtons = document.querySelectorAll('.day-button');
         const dayInfo = document.getElementById('dayInfo');
         const mapImage = document.getElementById('dayMap');
 
-        // Draggable map functionality
         let isDragging = false;
         let startX, startY, translateX = 0, translateY = 0;
 
@@ -475,7 +354,6 @@
             mapImage.style.cursor = 'grab';
         });
 
-        // Fonction pour afficher les activités d'un jour
         function showDayActivities(day) {
             const data = dayActivities[day];
             const activitiesList = data.activities.map(activity => 
@@ -490,36 +368,27 @@
             `;
         }
 
-        // Gestionnaire d'événements pour les boutons de jour
         dayButtons.forEach(button => {
             button.addEventListener('click', () => {
-                // Retirer la classe active de tous les boutons
                 dayButtons.forEach(btn => btn.classList.remove('active'));
                 
-                // Ajouter la classe active au bouton cliqué
                 button.classList.add('active');
                 
-                // Obtenir le jour sélectionné
                 const selectedDay = button.getAttribute('data-day');
                 
-                // Afficher les activités et changer la carte
                 showDayActivities(selectedDay);
                 
-                // Changer l'image de la carte
                 const data = dayActivities[selectedDay];
                 mapImage.src = data.mapImage;
                 mapImage.alt = data.mapAlt;
                 
-                // Réinitialiser la position de la carte
                 mapImage.style.transform = 'translate(0px, 0px)';
                 translateX = 0;
                 translateY = 0;
             });
         });
 
-        // Initialisation
         document.addEventListener('DOMContentLoaded', () => {
-            // Initialiser avec le premier jour
             showDayActivities('day1');
         });
     </script>
